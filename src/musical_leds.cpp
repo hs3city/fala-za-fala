@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 #include <Adafruit_NeoPixel.h>
 #include <arduinoFFT.h>
 
@@ -32,6 +34,17 @@ volatile int samplesRead;
 
 double vReal[SAMPLES];
 double vImag[SAMPLES];
+
+void onPDMdata() {
+  // Query the number of available bytes
+  int bytesAvailable = PDM.available();
+
+  // Read into the sample buffer
+  PDM.read(sampleBuffer, bytesAvailable);
+
+  // 16-bit, 2 bytes per sample
+  samplesRead = bytesAvailable / 2;
+}
 
 void setup() {
 
@@ -153,15 +166,4 @@ void loop() {
     pixels.setPixelColor(i, pixels.gamma32(hsv_slide[i]));
   }
   pixels.show();
-}
-
-void onPDMdata() {
-  // Query the number of available bytes
-  int bytesAvailable = PDM.available();
-
-  // Read into the sample buffer
-  PDM.read(sampleBuffer, bytesAvailable);
-
-  // 16-bit, 2 bytes per sample
-  samplesRead = bytesAvailable / 2;
 }
