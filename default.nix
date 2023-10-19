@@ -9,17 +9,18 @@ with pkgs;
 
 mkShell {
   buildInputs = [
-    arduino-cli
     clang-tools
     pre-commit
+    (python310.withPackages (ps: with ps; [
+      pip
+      virtualenv
+    ]))
   ];
   shellHook = ''
-    arduino-cli config init || true
-    arduino-cli core update-index
-    arduino-cli config add board_manager.additional_urls https://files.seeedstudio.com/arduino/package_seeeduino_boards_index.json
-    arduino-cli core install Seeeduino:mbed
-    arduino-cli lib install "Adafruit NeoPixel"@1.11.0
-    arduino-cli lib install arduinoFFT@1.6.0
+    virtualenv venv
+    source venv/bin/activate
+    pip install platformio
+    pio pkg update
     pre-commit install
   '';
 }
